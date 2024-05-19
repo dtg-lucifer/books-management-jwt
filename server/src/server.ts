@@ -13,6 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(
   cors({
     credentials: true,
