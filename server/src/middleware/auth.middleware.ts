@@ -2,6 +2,9 @@ import { NextFunction, Response } from "express";
 import { JwtPayload } from "../types/jwt.interface";
 import jwt from "jsonwebtoken";
 import { AuthenticatedRequest } from "../types/authenticatedRequest.interface";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const JWT_SECRET = process.env.SECRET || "secret__key";
 

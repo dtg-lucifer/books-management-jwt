@@ -1,11 +1,17 @@
 import mongoose, { Schema } from "mongoose";
 import { IUser } from "../types/user.interface";
 import bcrypt from "bcryptjs";
+import Joi from "joi";
 
 const UserSchema: Schema = new Schema({
   userName: { type: String, required: true, unique: true },
   password: { type: String, required: true },
 });
+
+const UserSchemaJoi = Joi.object({
+  userName: Joi.string().min(4).required(),
+  password: Joi.string().min(8).required(),
+})
 
 UserSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password")) {
@@ -24,4 +30,4 @@ UserSchema.methods.comparePassword = async function (
 
 const UserModel = mongoose.model<IUser>("users", UserSchema);
 
-export { UserModel };
+export { UserModel, UserSchemaJoi };

@@ -5,7 +5,7 @@ import { bookRouter } from "./routes/books.route";
 import dotenv from "dotenv";
 import { dbConnect } from "./utils/dbConnect";
 import { authRouter } from "./routes/auth.route";
-import { RequireAuth } from "./middleware/auth.middleware";
+import { erroHandler } from "./middleware/errorhandler.middleware";
 
 dotenv.config();
 
@@ -13,7 +13,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(
   cors({
     credentials: true,
@@ -23,8 +22,10 @@ app.use(
 
 dbConnect();
 
+app.use(erroHandler);
+
 app.use("/auth", authRouter);
-app.use("/books", RequireAuth, bookRouter);
+app.use("/books", bookRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

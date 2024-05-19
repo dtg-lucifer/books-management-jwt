@@ -1,7 +1,7 @@
 import { Response, Router } from "express";
 import { AuthenticatedRequest } from "../types/authenticatedRequest.interface";
-import { BookModel } from "../models/books.model";
-import { IBook } from "../types/book.interface";
+import { BookModel, BookSchemaJoi } from "../models/books.model";
+import { RequireAuth } from "../middleware/auth.middleware";
 
 const bookRouter = Router();
 
@@ -33,7 +33,8 @@ bookRouter
     }
   )
   .post(
-    "/create",
+    "/",
+    RequireAuth,
     async (
       req: AuthenticatedRequest<
         {},
@@ -42,20 +43,96 @@ bookRouter
           title: string;
           author: string;
           genre: string;
-          yearPublished: string;
+          yearPublished: number;
         },
         {}
       >,
       res: Response
     ) => {
       const { title, author, genre, yearPublished } = req.body;
-      
-			const newBook = await BookModel.create({ title, author, genre, yearPublished })
 
+      const { error } = BookSchemaJoi.validate({
+        title,
+        author,
+        genre,
+        yearPublished,
+      });
 
-      await newBook.save()
+      if (error) {
+        return res.status(401).json({
+          message: "Validation failed",
+          cause: error.details[0].message,
+        });
+      }
 
-      res.status(200).json(newBook.toJSON())
+      const newBook = await BookModel.create({
+        title,
+        author,
+        genre,
+        yearPublished,
+      });
+
+      await newBook.save();
+
+      res.status(200).json(newBook.toJSON());
+    }
+  )
+  .put(
+    "/:id",
+    RequireAuth,
+    async (
+      req: AuthenticatedRequest<
+        { id: string },
+        {},
+        {
+          title?: string;
+          author?: string;
+          genre?: string;
+        },
+        {}
+      >,
+      res: Response
+    ) => {
+      const { id } = req.params;
+      const { title, author, genre } = req.body;
+
+      if (!title && !author && !genre) {
+        return res.status(400).json({ message: "No data to update" });
+      }
+
+      const book = await BookModel.findById(id);
+
+      if (!book) {
+        return res.status(404).json({ message: "Book not found" });
+      }
+
+      title && (book.title = title);
+      author && (book.author = author);
+      genre && (book.genre = genre);
+
+      await book.save();
+
+      res.status(200).json(book.toJSON());
+    }
+  )
+  .delete(
+    "/:id",
+    RequireAuth,
+    async (
+      req: AuthenticatedRequest<{ id: string }, {}, {}, {}>,
+      res: Response
+    ) => {
+      const { id } = req.params;
+
+      const book = await BookModel.findById(id);
+
+      if (!book) {
+        return res.status(404).json({ message: "Book not found" });
+      }
+
+      await book.deleteOne();
+
+      res.status(200).json({ message: "Book deleted" });
     }
   );
 

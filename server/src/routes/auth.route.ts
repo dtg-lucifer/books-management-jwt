@@ -1,20 +1,26 @@
 import { Request, Response, Router } from "express";
-import { UserModel } from "../models/users.model";
+import { UserModel, UserSchemaJoi } from "../models/users.model";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const authRouter = Router();
 
-const JWT_SECRET = process.env.SECRET || "secret__key";
-const JWT_EXIRATION = process.env.EXPIRY || "1d";
+const JWT_SECRET = process.env.SECRET!;
+const JWT_EXPIRATION = process.env.EXPIRY!;
 
 authRouter
   .post("/register", async (req: Request, res: Response) => {
     const { userName, password } = req.body;
 
-    if (!userName || !password) {
+    const { error } = UserSchemaJoi.validate({ userName, password });
+
+    if (error) {
+      const cause = error.details.map(detail => detail.message).join(", ");
       return res
         .status(400)
-        .json({ message: "Username and password are required" });
+        .json({ message: "Username and password are required", cause });
     }
 
     try {
@@ -25,7 +31,7 @@ authRouter
       const user = new UserModel({ userName, password });
       await user.save();
       const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
-        expiresIn: JWT_EXIRATION,
+        expiresIn: JWT_EXPIRATION,
       });
       res.json({ token });
     } catch (err) {
@@ -33,14 +39,16 @@ authRouter
       res.status(500).json({ message: err.message });
     }
   })
-
   .post("/login", async (req: Request, res: Response) => {
     const { userName, password } = req.body;
 
-    if (!userName || !password) {
+    const { error } = UserSchemaJoi.validate({ userName, password });
+
+    if (error) {
+      const cause = error.details.map(detail => detail.message).join(", ");
       return res
         .status(400)
-        .json({ message: "Username and password are required" });
+        .json({ message: "Username and password are required", cause });
     }
 
     try {
@@ -50,10 +58,10 @@ authRouter
       }
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
-        return res.status(400).json({ message: "Invalid credentials" });
+        return res.status(400).json({ message: "Invalid password" });
       }
       const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
-        expiresIn: JWT_EXIRATION,
+        expiresIn: JWT_EXPIRATION,
       });
       res.json({ token });
     } catch (err) {
