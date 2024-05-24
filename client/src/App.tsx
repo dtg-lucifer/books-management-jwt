@@ -3,12 +3,20 @@ import { Home } from "./pages/home/home.page";
 import { BookShowcase } from "./pages/bookshowcase/books.page";
 import Login from "./pages/authentication/login.page";
 import Register from "./pages/authentication/register.page";
+import AuthGuard from "./components/authguard/authGuard";
 
 function App() {
   return (
     <Routes>
       <Route index element={<Home />} />
-      <Route path="/books" element={<BookShowcase />} />
+      <Route
+        path="/books"
+        element={
+          <AuthGuard>
+            <BookShowcase />
+          </AuthGuard>
+        }
+      />
       <Route path="/auth">
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />

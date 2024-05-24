@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import { UserModel, UserSchemaJoi } from "../models/users.model";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { JwtPayload } from "../types/jwt.interface";
 
 dotenv.config();
 
@@ -33,6 +34,12 @@ authRouter
       const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
         expiresIn: JWT_EXPIRATION,
       });
+
+      res.cookie("SESSION", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      })
       res.json({ token });
     } catch (err) {
       // @ts-ignore
@@ -63,10 +70,31 @@ authRouter
       const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
         expiresIn: JWT_EXPIRATION,
       });
+      res.cookie("SESSION", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      })
       res.json({ token });
     } catch (err) {
       // @ts-ignore
       res.status(500).json({ message: err.message });
+    }
+  })
+  .get("/me", async (req: Request, res: Response) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+      const user = await UserModel.findById(decoded.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json({ user: user.toJSON() });
+    } catch (err) {
+      res.status(500).json({ message: err });
     }
   });
 

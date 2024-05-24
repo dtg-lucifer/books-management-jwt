@@ -6,7 +6,7 @@ import { RequireAuth } from "../middleware/auth.middleware";
 const bookRouter = Router();
 
 bookRouter
-  .get("/all", async (req: AuthenticatedRequest, res: Response) => {
+  .get("/all", async (_, res: Response) => {
     const books = await BookModel.find();
 
     if (books.length === 0) {
