@@ -1,36 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import { useAuthenticatedApi } from "../../hooks/useAuthenticatedApi";
-import { IUser } from "../../types/user.interface";
+import React, { useContext, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
-const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<IUser | null>(null);
-  const { data, loading, error, refetch } = useAuthenticatedApi<IUser>({
-    url: "/api/v1/auth/me",
-    method: "GET",
-  });
+const AuthGuard: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const { user, isLoading } = useAuth();
+
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (data) {
-      setUser(data);
+    if (!user && pathname !== "/login") {
+      navigate("/auth/login");
     }
+  }, [user, navigate, pathname]);
 
-    return () => {
-      setUser(null);
-      refetch();
-    };
-  }, [data, error]);
-
-  if (loading) {
+  if (isLoading) {
     return <span>Fetching details...</span>;
   }
 
   if (!user) {
-    console.log("No token found");
-    return <Navigate to="/auth/login" />;
+    return null;
   }
 
   return <>{children}</>;
 };
 
-export default AuthGuard;
+export { AuthGuard };

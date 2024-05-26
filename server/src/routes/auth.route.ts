@@ -39,7 +39,7 @@ authRouter
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 1000 * 60 * 60 * 24 * 7,
-      })
+      });
       res.json({ token });
     } catch (err) {
       // @ts-ignore
@@ -63,18 +63,23 @@ authRouter
       if (!user) {
         return res.status(400).json({ message: "Invalid credentials" });
       }
+      
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
         return res.status(400).json({ message: "Invalid password" });
       }
+
       const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
         expiresIn: JWT_EXPIRATION,
       });
+
+      console.log({ token });
+
       res.cookie("SESSION", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 1000 * 60 * 60 * 24 * 7,
-      })
+      });
       res.json({ token });
     } catch (err) {
       // @ts-ignore

@@ -1,28 +1,39 @@
 import { Route, Routes } from "react-router-dom";
 import { Home } from "./pages/home/home.page";
 import { BookShowcase } from "./pages/bookshowcase/books.page";
-import Login from "./pages/authentication/login.page";
-import Register from "./pages/authentication/register.page";
-import AuthGuard from "./components/authguard/authGuard";
+import Auth from "./pages/authentication/auth.page";
+import { useState } from "react";
+import { IUser } from "./types/user.interface";
+import { AuthProvider } from "./context/authContext";
+import { AuthGuard } from "./components/authguard/authGuard";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 function App() {
+  const [user, setUser] = useState<IUser | null>(null);
+
+  const queryClient = new QueryClient();
+
   return (
-    <Routes>
-      <Route index element={<Home />} />
-      <Route
-        path="/books"
-        element={
-          <AuthGuard>
-            <BookShowcase />
-          </AuthGuard>
-        }
-      />
-      <Route path="/auth">
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-      </Route>
-      <Route path="*" element={<div>404 Not Found</div>} />
-    </Routes>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider value={{ user, setUser }}>
+        <Routes>
+          <Route index element={<Home />} />
+          <Route
+            path="/books"
+            element={
+              <AuthGuard>
+                <BookShowcase />
+              </AuthGuard>
+            }
+          />
+          <Route path="/auth">
+            <Route path="login" element={<Auth page="LOGIN" />} />
+            <Route path="register" element={<Auth page="REG" />} />
+          </Route>
+          <Route path="*" element={<div>404 Not Found</div>} />
+        </Routes>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

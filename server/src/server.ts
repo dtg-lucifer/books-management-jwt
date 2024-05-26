@@ -6,7 +6,8 @@ import { bookRouter } from "./routes/books.route";
 import dotenv from "dotenv";
 import { dbConnect } from "./utils/dbConnect";
 import { authRouter } from "./routes/auth.route";
-import { erroHandler } from "./middleware/errorhandler.middleware";
+import { errorHandler } from "./middleware/errorhandler.middleware";
+import { userRouter } from "./routes/user.route";
 
 dotenv.config();
 
@@ -26,11 +27,17 @@ app.use(
 
 dbConnect();
 
-app.use(erroHandler);
+app.use(errorHandler);
 
 app.use(`${BASE}/auth`, authRouter);
 app.use(`${BASE}/books`, bookRouter);
+app.use(`${BASE}/user`, userRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+process.on("exit", (err) => {
+  console.log(err);
+  process.exit(1);
 });

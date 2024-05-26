@@ -5,5 +5,5 @@ export interface FetchState<T> {
 }
 
 export interface UseAuthenticatedApiResult<T> extends FetchState<T> {
-	refetch: () => void;
+	refetch: (data: Record<string, any>) => void;
 }
