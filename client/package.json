@@ -11,6 +11,7 @@
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "axios": "^1.7.1",
+    "js-cookie": "^3.0.5",
     "my-project": "file:..",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -47,6 +48,7 @@
     ]
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/mongoose": "^5.11.97",
     "@types/react-router": "^5.1.20",
     "mongoose": "^8.4.0",

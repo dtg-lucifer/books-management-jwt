@@ -5,20 +5,24 @@ import { useMutation } from "react-query";
 import { login } from "../../utils/api";
 
 const Login = ({ page }: { page: "LOGIN" | "REG" }) => {
-	
-	const [body, setBody] = useState<{ userName: string; password: string }>({
-		userName: "",
+  const [body, setBody] = useState<{ userName: string; password: string }>({
+    userName: "",
     password: "",
   });
 
-  const {} = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: async (body: { userName: string; password: string }) => {
-      const {} = await login<string>(body);
-    }
+      const { data } = await login<string>(body);
+      return { data };
+    },
+    onSuccess: (data) => {
+      console.log(data);
+    },
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    mutate(body);
   };
 
   return (
@@ -59,7 +63,7 @@ const Login = ({ page }: { page: "LOGIN" | "REG" }) => {
                 name="password"
               />
             </div>
-            <button type="submit">Login</button>
+            <button disabled={isLoading} type="submit">Login</button>
           </form>
         </section>
       ) : (

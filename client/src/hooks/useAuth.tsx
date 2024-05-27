@@ -7,6 +7,10 @@ export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { user, setUser } = useContext(AuthContext);
 
+  const token = document.cookie;
+
+  console.log({ token });
+
   const controller = new AbortController();
 
   useEffect(() => {
@@ -23,8 +27,8 @@ export const useAuth = () => {
       });
 
     return () => {
-      controller.abort()
-    }
+      controller.abort();
+    };
   }, []);
 
   return { user, isLoading };

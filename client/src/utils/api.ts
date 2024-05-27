@@ -1,8 +1,9 @@
 import axios from "axios";
-import { getCookie } from "./getCookie";
 import { IUser } from "../types/user.interface";
+import { getCookie } from "./cookie";
 
 export const getAuthStatus = async <T>() => {
+
   const token = getCookie("SESSION");
 
   return await axios.get<IUser>(`${process.env.REACT_APP_SERVER_URL}/auth/me`, {

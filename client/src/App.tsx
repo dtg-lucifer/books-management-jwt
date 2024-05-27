@@ -14,26 +14,40 @@ function App() {
   const queryClient = new QueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider value={{ user, setUser }}>
-        <Routes>
-          <Route index element={<Home />} />
-          <Route
-            path="/books"
-            element={
-              <AuthGuard>
-                <BookShowcase />
-              </AuthGuard>
-            }
-          />
-          <Route path="/auth">
-            <Route path="login" element={<Auth page="LOGIN" />} />
-            <Route path="register" element={<Auth page="REG" />} />
-          </Route>
-          <Route path="*" element={<div>404 Not Found</div>} />
-        </Routes>
-      </AuthProvider>
-    </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider value={{ user, setUser }}>
+          <Routes>
+            <Route index element={<Home />} />
+            <Route
+              path="/books"
+              element={
+                <AuthGuard>
+                  <BookShowcase />
+                </AuthGuard>
+              }
+            />
+            <Route path="/auth">
+              <Route
+                path="login"
+                element={
+                  <AuthGuard>
+                    <Auth page="LOGIN" />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="register"
+                element={
+                  <AuthGuard>
+                    <Auth page="REG" />
+                  </AuthGuard>
+                }
+              />
+            </Route>
+            <Route path="*" element={<div>404 Not Found</div>} />
+          </Routes>
+        </AuthProvider>
+      </QueryClientProvider>
   );
 }
 
