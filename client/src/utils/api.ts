@@ -25,7 +25,7 @@ export const login = async <T>(data: {
   );
 };
 
-export const getUserById = async <T extends IUser>(id: string) => {
+export const getUserById = async <T extends Omit<IUser, "password">>(id: string) => {
 	return await axios.get<T>(
 		`${process.env.REACT_APP_SERVER_URL}/user/${id}`,
 		{
