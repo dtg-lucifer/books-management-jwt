@@ -42,8 +42,7 @@ authRouter
       });
       res.json({ token });
     } catch (err) {
-      // @ts-ignore
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   })
   .post("/login", async (req: Request, res: Response) => {
@@ -80,8 +79,7 @@ authRouter
       });
       res.json({ token });
     } catch (err) {
-      // @ts-ignore
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   })
   .get("/me", async (req: Request, res: Response) => {
