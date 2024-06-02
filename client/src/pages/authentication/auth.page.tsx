@@ -3,8 +3,11 @@ import styles from "./auth.module.scss";
 import { IUser } from "../../types/user.interface";
 import { useMutation } from "react-query";
 import { login } from "../../utils/api";
+import { useNavigate } from "react-router";
 
 const Login = ({ page }: { page: "LOGIN" | "REG" }) => {
+  const navigate = useNavigate();
+
   const [body, setBody] = useState<{ userName: string; password: string }>({
     userName: "",
     password: "",
@@ -12,11 +15,12 @@ const Login = ({ page }: { page: "LOGIN" | "REG" }) => {
 
   const { mutate, isLoading } = useMutation({
     mutationFn: async (body: { userName: string; password: string }) => {
-      const { data } = await login<string>(body);
+      const { data } = await login<Record<string, string>>(body);
       return { data };
     },
     onSuccess: (data) => {
       console.log(data);
+      navigate("/books");
     },
   });
 
@@ -63,7 +67,9 @@ const Login = ({ page }: { page: "LOGIN" | "REG" }) => {
                 name="password"
               />
             </div>
-            <button disabled={isLoading} type="submit">Login</button>
+            <button disabled={isLoading} type="submit">
+              Login
+            </button>
           </form>
         </section>
       ) : (

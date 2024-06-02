@@ -16,7 +16,11 @@ export const useAuth = () => {
   useEffect(() => {
     getAuthStatus<IUser>()
       .then(({ data }) => {
-        console.log("Use Auth Success:", data);
+        console.log("Use Auth Success:", {
+          ...data,
+          // @ts-ignore
+          user: { ...data.user, password: "********" },
+        });
         setUser(data);
       })
       .catch((err: Error) => {
