@@ -17,7 +17,8 @@ main.main__wrapper {
     border-radius: 0.5rem;
   }
 
-  section.login__container {
+  section.login__container,
+  section.register__container {
     & > div {
       padding: 0 1rem;
       font-size: 1rem;

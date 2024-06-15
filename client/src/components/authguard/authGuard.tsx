@@ -6,9 +6,6 @@ const AuthGuard: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { user, isLoading } = useAuth();
 
   const { pathname } = useLocation();
-  const navigate = useNavigate();
-
-  console.log("Pathname:", pathname);
 
   if (isLoading) {
     return <span>Fetching details...</span>;
